@@ -1,0 +1,26 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * One Export plugin for Craft CMS 3.x
+ *
+ * One Export Settings.twig
+ *
+ * @author    One Design Company
+ * @copyright Copyright (c) 2021 One Design Company
+ * @link      https://onedesigncompany.com
+ * @package   OneExport
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("onedesign\\oneexport\\assetbundles\\oneexport\\OneExportAsset") %}
+
+{{ forms.textField({
+    label: 'Some Field',
+    instructions: 'Enter some setting here.',
+    id: 'someAttribute',
+    name: 'someAttribute',
+    value: settings['someAttribute']})
+}}

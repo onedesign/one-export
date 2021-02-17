@@ -1,0 +1,47 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * One Export plugin for Craft CMS 3.x
+ *
+ * One Export index.twig
+ *
+ * @author    One Design Company
+ * @copyright Copyright (c) 2021 One Design Company
+ * @link      https://onedesigncompany.com
+ * @package   OneExport
+ * @since     1.0.0
+ */
+#}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set fullPageForm = true %}
+{% block submitButton %}
+  <button type="submit" class="btn submit">{{ 'Export'|t('app') }}</button>
+{% endblock %}
+
+{% do view.registerAssetBundle("onedesign\\oneexport\\assetbundles\\oneexport\\OneExportAsset") %}
+{% do view.registerAssetBundle("onedesign\\oneexport\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
+
+{% set title = "Export Users" %}
+{% set pluginCpUrl = url('one-export') %}
+
+{% set mainFormAttributes = {
+  method: 'GET'
+} %}
+
+{% set content %}
+  {{ actionInput('one-export/export/users') }}
+  {{ hiddenInput('download', 'true') }}
+
+  {% for field in fields %}
+    {{ forms.checkboxSelectField({
+      label: field.label,
+      name: field.name,
+      options: field.options,
+      values: field.defaultValue,
+      showAllOption: true,
+    }) }}
+  {% endfor %}
+{% endset %}
