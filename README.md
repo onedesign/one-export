@@ -24,20 +24,14 @@ To install the plugin, follow these instructions.
 
 ## One Export Overview
 
--Insert text here-
-
-## Configuring One Export
-
--Insert text here-
-
-## Using One Export
-
--Insert text here-
+At the moment this is a very specific plugin that allows you to export users based on user group or status (or a combination).
 
 ## One Export Roadmap
 
 Some things to do, and ideas for potential features:
 
-* Release it
+* Extend to allow exporting of other content types
+* Allow customizing the generated CSV
+* Allow customizing default values to be exported
 
 Brought to you by [One Design Company](https://onedesigncompany.com)

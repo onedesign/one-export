@@ -10,12 +10,8 @@
 
 namespace onedesign\oneexport\services;
 
-use craft\base\Element;
-use craft\elements\User;
-use onedesign\oneexport\OneExport;
-
-use Craft;
 use craft\base\Component;
+use craft\elements\User;
 
 /**
  * @author    One Design Company
@@ -29,9 +25,9 @@ class Export extends Component
 
     /**
      * @param User[] $users
-     * @return string
+     * @return array
      */
-    public function formatUsers(array $users)
+    public function formatUsers(array $users): array
     {
         $data = [];
         $dateFormat = 'm/d/Y';

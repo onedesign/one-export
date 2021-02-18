@@ -10,20 +10,15 @@
 
 namespace onedesign\oneexport;
 
-use onedesign\oneexport\services\Export as ExportService;
-use onedesign\oneexport\models\Settings;
-use onedesign\oneexport\utilities\OneExportUtility as OneExportUtilityUtility;
-
 use Craft;
 use craft\base\Plugin;
-use craft\services\Plugins;
-use craft\events\PluginEvent;
 use craft\console\Application as ConsoleApplication;
-use craft\web\UrlManager;
-use craft\services\Utilities;
-use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterCpNavItemsEvent;
 use craft\events\RegisterUrlRulesEvent;
-
+use craft\web\twig\variables\Cp;
+use craft\web\UrlManager;
+use onedesign\oneexport\models\Settings;
+use onedesign\oneexport\services\Export as ExportService;
 use yii\base\Event;
 
 /**
@@ -37,34 +32,15 @@ use yii\base\Event;
  */
 class OneExport extends Plugin
 {
-    // Static Properties
-    // =========================================================================
-
     /**
      * @var OneExport
      */
     public static $plugin;
 
-    // Public Properties
-    // =========================================================================
-
     /**
      * @var string
      */
     public $schemaVersion = '1.0.0';
-
-    /**
-     * @var bool
-     */
-    public $hasCpSettings = true;
-
-    /**
-     * @var bool
-     */
-    public $hasCpSection = true;
-
-    // Public Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
@@ -74,40 +50,29 @@ class OneExport extends Plugin
         parent::init();
         self::$plugin = $this;
 
+        Craft::setAlias('@one-export', $this->getBasePath());
+
         if (Craft::$app instanceof ConsoleApplication) {
             $this->controllerNamespace = 'onedesign\oneexport\console\controllers';
         }
 
         Event::on(
             UrlManager::class,
-            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
-                $event->rules['siteActionTrigger1'] = 'one-export/export';
-            }
-        );
-
-        Event::on(
-            UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['one-export'] = 'one-export/export';
             }
         );
 
         Event::on(
-            Utilities::class,
-            Utilities::EVENT_REGISTER_UTILITY_TYPES,
-            function (RegisterComponentTypesEvent $event) {
-                $event->types[] = OneExportUtilityUtility::class;
-            }
-        );
-
-        Event::on(
-            Plugins::class,
-            Plugins::EVENT_AFTER_INSTALL_PLUGIN,
-            function (PluginEvent $event) {
-                if ($event->plugin === $this) {
-                }
+            Cp::class,
+            CP::EVENT_REGISTER_CP_NAV_ITEMS,
+            function(RegisterCpNavItemsEvent $event) {
+                $event->navItems[] = [
+                    'url' => 'one-export',
+                    'label' => 'Export',
+                    'icon' => '@one-export/icon-mask.svg'
+                ];
             }
         );
 
@@ -118,30 +83,6 @@ class OneExport extends Plugin
                 ['name' => $this->name]
             ),
             __METHOD__
-        );
-    }
-
-    // Protected Methods
-    // =========================================================================
-
-    /**
-     * @inheritdoc
-     */
-    protected function createSettingsModel()
-    {
-        return new Settings();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function settingsHtml(): string
-    {
-        return Craft::$app->view->renderTemplate(
-            'one-export/settings',
-            [
-                'settings' => $this->getSettings()
-            ]
         );
     }
 }

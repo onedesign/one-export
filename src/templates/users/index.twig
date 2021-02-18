@@ -21,9 +21,6 @@
   <button type="submit" class="btn submit">{{ 'Export'|t('app') }}</button>
 {% endblock %}
 
-{% do view.registerAssetBundle("onedesign\\oneexport\\assetbundles\\oneexport\\OneExportAsset") %}
-{% do view.registerAssetBundle("onedesign\\oneexport\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
-
 {% set title = "Export Users" %}
 {% set pluginCpUrl = url('one-export') %}
 
@@ -35,13 +32,17 @@
   {{ actionInput('one-export/export/users') }}
   {{ hiddenInput('download', 'true') }}
 
-  {% for field in fields %}
-    {{ forms.checkboxSelectField({
-      label: field.label,
-      name: field.name,
-      options: field.options,
-      values: field.defaultValue,
-      showAllOption: true,
-    }) }}
-  {% endfor %}
+  <div class="flex">
+    {% for field in fields %}
+      <div class="flex-grow">
+        {{ forms.checkboxSelectField({
+          label: field.label,
+          name: field.name,
+          options: field.options,
+          values: field.defaultValue,
+          showAllOption: true,
+        }) }}
+      </div>
+    {% endfor %}
+  </div>
 {% endset %}

@@ -10,16 +10,11 @@
 
 namespace onedesign\oneexport\controllers;
 
-use craft\db\Query;
-use craft\db\Table;
+use Craft;
 use craft\elements\User;
-use craft\models\UserGroup;
+use craft\web\Controller;
 use craft\web\Response;
 use onedesign\oneexport\OneExport;
-
-use Craft;
-use craft\web\Controller;
-use onedesign\oneexport\services\Export;
 
 /**
  * @author    One Design Company
@@ -29,20 +24,9 @@ use onedesign\oneexport\services\Export;
 class ExportController extends Controller
 {
 
-    // Protected Properties
-    // =========================================================================
-
     /**
-     * @var    bool|array Allows anonymous access to this controller's actions.
-     *         The actions must be in 'kebab-case'
-     * @access protected
-     */
-    protected $allowAnonymous = false;
-
-    // Public Methods
-    // =========================================================================
-
-    /**
+     * Render the export users page
+     *
      * @return mixed
      */
     public function actionIndex()
@@ -60,24 +44,10 @@ class ExportController extends Controller
                 'options' => [],
                 'defaultValue' => ['active']
             ],
-            'company' => [
-                'name' => 'company',
-                'label' => 'Company',
-                'options' => [],
-                'defaultValue' => '*'
-            ]
         ];
 
         $userStatuses = User::statuses();
         $groups = Craft::$app->userGroups->getAllGroups();
-        $userIds = User::find()->ids();
-        $companies = (new Query())
-            ->select('field_company')
-            ->distinct()
-            ->from(Table::CONTENT)
-            ->where(['elementId' => $userIds])
-            ->orderBy('field_company ASC')
-            ->column();
 
         foreach ($groups as $group) {
             $fields['userGroup']['options'][] = [
@@ -93,19 +63,14 @@ class ExportController extends Controller
             ];
         }
 
-        foreach ($companies as $company) {
-            $fields['company']['options'][] = [
-                'value' => $company,
-                'label' => $company
-            ];
-        }
-
         return $this->renderTemplate('one-export/users', [
             'fields' => $fields,
         ]);
     }
 
     /**
+     * Export a CSV of selected users
+     *
      * @return mixed
      * @throws \yii\web\BadRequestHttpException
      */
@@ -114,11 +79,9 @@ class ExportController extends Controller
         $request = Craft::$app->getRequest();
         $groups = $request->getRequiredParam('userGroup');
         $statuses = $request->getRequiredParam('userStatus');
-        $company = $request->getParam('company');
         $download = $request->getParam('download', 'true') === 'true';
 
         $users = User::find()
-            ->company($company)
             ->orderBy('company ASC, lastName ASC, firstName ASC')
             ->limit(null);
 
@@ -130,7 +93,6 @@ class ExportController extends Controller
             $users->status($statuses);
         }
 
-
         $data = OneExport::$plugin->export->formatUsers($users->all());
         $filename = 'users-export-' . time() . '.csv';
 
@@ -138,7 +100,6 @@ class ExportController extends Controller
             return $this->asJson([
                 'groups' => $groups,
                 'statuses' => $statuses,
-                'company' => $company,
                 'count' => count($data),
                 'users' => $data
             ]);
