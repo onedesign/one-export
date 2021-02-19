@@ -66,7 +66,7 @@ class OneExport extends Plugin
 
         Event::on(
             Cp::class,
-            CP::EVENT_REGISTER_CP_NAV_ITEMS,
+            Cp::EVENT_REGISTER_CP_NAV_ITEMS,
             function(RegisterCpNavItemsEvent $event) {
                 $event->navItems[] = [
                     'url' => 'one-export',
